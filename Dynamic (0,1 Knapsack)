@@ -1,0 +1,44 @@
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+int knapsackDP(int W, vector<int>& weights, vector<int>& values, int n) {
+   
+    vector<vector<int>> dp(n + 1, vector<int>(W + 1, 0));
+    
+    for (int i = 1; i <= n; i++) {
+        for (int w = 1; w <= W; w++) {
+            if (weights[i - 1] <= w) {
+               
+                dp[i][w] = max(dp[i - 1][w], dp[i - 1][w - weights[i - 1]] + values[i - 1]);
+            } else {
+                dp[i][w] = dp[i - 1][w];   
+            }
+        }
+    }
+    
+    
+    return dp[n][W];
+}
+
+int main() {
+    int n, W;
+    
+    cout << "Enter number of items: ";
+    cin >> n;
+    cout << "Enter knapsack capacity: ";
+    cin >> W;
+    
+    vector<int> weights(n), values(n);
+    
+    for (int i = 0; i < n; i++) {
+        cout << "Enter weight and value for item " << i + 1 << ": ";
+        cin >> weights[i] >> values[i];
+    }
+    
+    int maxValue = knapsackDP(W, weights, values, n);
+    cout << "Maximum value (Dynamic Programming approach): " << maxValue << endl;
+
+    return 0;
+}
