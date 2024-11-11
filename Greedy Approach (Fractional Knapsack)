@@ -1,0 +1,62 @@
+#include <iostream>
+#include <vector>
+#include <algorithm>
+
+using namespace std;
+
+struct Item {
+    int weight, value;
+    double ratio; 
+};
+
+bool compare(Item a, Item b) {
+    return a.ratio > b.ratio;
+}
+
+double knapsackGreedy(int W, vector<Item>& items) {
+    int n = items.size();
+    
+    for (int i = 0; i < n; i++) {
+        items[i].ratio = (double)items[i].value / items[i].weight;
+    }
+
+    sort(items.begin(), items.end(), compare);
+
+    double totalValue = 0.0;
+    for (int i = 0; i < n; i++) {
+        if (W == 0) break;
+
+        if (items[i].weight <= W) {
+            W -= items[i].weight;
+            totalValue += items[i].value;
+        }
+      
+        else {
+            totalValue += items[i].value * ((double)W / items[i].weight);
+            break;
+        }
+    }
+    return totalValue;
+}
+
+int main() {
+    int n, W;
+    
+    cout << "Enter number of items: ";
+    cin >> n;
+    cout << "Enter knapsack capacity: ";
+    cin >> W;
+    
+    vector<Item> items(n);
+    
+    
+    for (int i = 0; i < n; i++) {
+        cout << "Enter weight and value for item " << i + 1 << ": ";
+        cin >> items[i].weight >> items[i].value;
+    }
+    
+    double maxValue = knapsackGreedy(W, items);
+    cout << "Maximum value (Greedy approach): " << maxValue << endl;
+
+    return 0;
+}
