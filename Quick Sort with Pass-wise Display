@@ -1,0 +1,44 @@
+#include <iostream>
+#include <vector>
+using namespace std;
+
+void displayArray(const vector<int>& arr) {
+    for (int num : arr) {
+        cout << num << " ";
+    }
+    cout << endl;
+}
+
+int partition(vector<int>& arr, int low, int high, int pass) {
+    int pivot = arr[high]; 
+    int i = low - 1; 
+
+    for (int j = low; j < high; j++) {
+        if (arr[j] < pivot) { 
+            i++;
+            swap(arr[i], arr[j]); // Swap arr[i] and arr[j]
+        }
+    }
+    swap(arr[i + 1], arr[high]); 
+    cout << "Pass " << pass << ": ";
+    displayArray(arr);
+    return i + 1; 
+}
+
+void quickSort(vector<int>& arr, int low, int high, int& pass) {
+    if (low < high) {
+        int pi = partition(arr, low, high, pass++); 
+        quickSort(arr, low, pi - 1, pass); 
+        quickSort(arr, pi + 1, high, pass); 
+    }
+}
+
+int main() {
+    vector<int> arr = {10, 7, 8, 9, 1, 5};
+    int pass = 1;
+    cout << "Quick Sort Passes:\n";
+    quickSort(arr, 0, arr.size() - 1, pass);
+    cout << "Final Sorted Array: ";
+    displayArray(arr);
+    return 0;
+}
