@@ -1,0 +1,102 @@
+#include <iostream>
+#include <vector>
+#include <fstream>
+#include <algorithm>
+
+using namespace std;
+
+struct Edge {
+    int src, dest, weight;
+};
+
+class DisjointSet {
+    vector<int> parent, rank;
+
+public:
+    DisjointSet(int n) : parent(n), rank(n, 0) {
+        for (int i = 0; i < n; i++)
+            parent[i] = i;
+    }
+
+    int find(int u) {
+        if (u != parent[u])
+            parent[u] = find(parent[u]);
+        return parent[u];
+    }
+
+    void unionSets(int u, int v) {
+        u = find(u);
+        v = find(v);
+        if (rank[u] < rank[v]) {
+            parent[u] = v;
+        } else if (rank[u] > rank[v]) {
+            parent[v] = u;
+        } else {
+            parent[v] = u;
+            rank[u]++;
+        }
+    }
+};
+void kruskalMST(const vector<vector<int>>& adjMatrix) {
+    int V = adjMatrix.size();
+    vector<Edge> edges;
+
+    for (int i = 0; i < V; i++) {
+        for (int j = i + 1; j < V; j++) {
+            if (adjMatrix[i][j] != 0) {
+                edges.push_back({i, j, adjMatrix[i][j]});
+            }
+        }
+    }
+
+    sort(edges.begin(), edges.end(), [](Edge a, Edge b) {
+        return a.weight < b.weight;
+    });
+
+    DisjointSet ds(V);
+    vector<Edge> mstEdges;
+    int totalWeight = 0;
+
+    for (const Edge& edge : edges) {
+        int uSet = ds.find(edge.src);
+        int vSet = ds.find(edge.dest);
+        if (uSet != vSet) {
+            mstEdges.push_back(edge);
+            ds.unionSets(uSet, vSet);
+            totalWeight += edge.weight;
+            if (mstEdges.size() == V - 1) break;
+        }
+    }
+
+    cout << "Kruskal's MST:" << endl;
+    for (const Edge& edge : mstEdges) {
+        cout << "Edge (" << edge.src << " - " << edge.dest << ") with weight " << edge.weight << endl;
+    }
+    cout << "Total weight of MST: " << totalWeight << endl;
+}
+
+void loadGraphAndRunKruskal(const string& filename) {
+    ifstream file(filename);
+    if (!file) {
+        cerr << "Unable to open file " << filename << endl;
+        return;
+    }
+
+    int V;
+    file >> V;
+
+    vector<vector<int>> adjMatrix(V, vector<int>(V));
+    for (int i = 0; i < V; i++)
+        for (int j = 0; j < V; j++)
+            file >> adjMatrix[i][j];
+
+    file.close();
+
+    kruskalMST(adjMatrix);
+}
+
+int main() {
+    string filename = "graph.txt";
+    loadGraphAndRunKruskal(filename);
+    return 0;
+}
