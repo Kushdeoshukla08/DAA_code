@@ -1,0 +1,52 @@
+#include <iostream>
+#include <vector>
+#include <climits>
+
+using namespace std;
+
+int optimalMergeBacktracking(vector<int>& files, int currentCost) {
+    
+    if (files.size() == 1) {
+        return currentCost;
+    }
+
+    int minCost = INT_MAX;
+    
+    for (int i = 0; i < files.size(); i++) {
+        for (int j = i + 1; j < files.size(); j++) {
+           
+            int mergeCost = files[i] + files[j];
+            
+            vector<int> newFiles = files;
+            newFiles.erase(newFiles.begin() + j); 
+            newFiles.erase(newFiles.begin() + i); 
+            newFiles.push_back(mergeCost);
+           
+            int totalCost = optimalMergeBacktracking(newFiles, currentCost + mergeCost);
+            
+            minCost = min(minCost, totalCost);
+        }
+    }
+    
+    return minCost;
+}
+
+int main() {
+    int n;
+    
+    cout << "Enter the number of files: ";
+    cin >> n;
+    
+    vector<int> files(n);
+    
+    cout << "Enter the sizes of the files: ";
+    for (int i = 0; i < n; i++) {
+        cin >> files[i];
+    }
+    
+    int minCost = optimalMergeBacktracking(files, 0);
+    
+    cout << "Minimum merge cost using backtracking: " << minCost << endl;
+
+    return 0;
+}
